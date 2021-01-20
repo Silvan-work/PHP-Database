@@ -1,7 +1,7 @@
 <?php
 
     //Packages
-    include('Connection.php');
+    include('connection.php');
 
     class Crud{
 
@@ -16,18 +16,19 @@
             }
             //forming values within ()
             $sql=$sql.") VALUES (";
-            $sql=$sql."'".$values[0]."'";
+            $sql=$sql."'".$GLOBALS['connection']->real_escape_string($values[0])."'";
             for($i=1;$i<count($values);$i++){
-                $sql=$sql.",'".$values[$i]."'";
+                $sql=$sql.",'".$GLOBALS['connection']->real_escape_string($values[$i])."'";
             }
             $sql=$sql.");";
 
             if($GLOBALS['connection']->query($sql)){
                 //Insertion successfull
+                $_SESSION['message']="Insertion successfull";
                 return $GLOBALS['connection']->insert_id;
             }else{
                 //something went wrong
-                return false;
+                $_SESSION['message']="Insertion failed!";
             }
         }
 
@@ -38,16 +39,16 @@
             //forming key value pair
             $iteration=count($values);
             for($i=0;$i<$iteration-1;$i++){
-                $sql=$sql.$columns[$i]."='".$values[$i]."',";
+                $sql=$sql.$columns[$i]."='".$GLOBALS['connection']->real_escape_string($values[$i])."',";
             }
-            $sql=$sql.$columns[$iteration-1]."='".$values[$iteration-1]."' WHERE id='".$id."';";
- 
+            $sql=$sql.$columns[$iteration-1]."='".$GLOBALS['connection']->real_escape_string($values[$iteration-1])."' WHERE id='".$id."';";
+
             if($GLOBALS['connection']->query($sql)){
                 //Updation successfull
-                return true;
+                $_SESSION['message']="Update successfull";
             }else{
                 //something went wrong
-                return false;
+                $_SESSION['message']="Updation Failed! ";
             }
         }
 
@@ -57,10 +58,10 @@
 
             if($GLOBALS['connection']->query($sql)){
                 //Deletion successfull
-                return true;
+                $_SESSION['message']="Deletion successfull";
             }else{
                 //something went wrong
-                return false;
+                $_SESSION['message']="Deletion Failed!";
             }
         }
 
@@ -122,7 +123,7 @@
                 return $result->fetch_assoc()['count'];
             }else{
                 //no data available
-                return false;
+                return 0;
             }
         }
 
@@ -134,7 +135,7 @@
                 return $result->fetch_assoc()['count'];
             }else{
                 //no data available
-                return false;
+                return 0;
             }
         }
     }
